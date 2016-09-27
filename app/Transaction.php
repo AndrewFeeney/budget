@@ -6,15 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-    const TYPES = [
-        'Credit' => 'Credit',
-        'Debit' => 'Debit'
-    ];
-
     protected $fillable = [
         'date',
-        'credit',
-        'debit',
+        'amount',
         'account_id'
     ];
 
@@ -27,13 +21,26 @@ class Transaction extends Model
     }
 
     /**
+     * Returns the amount that would balance this transaction
+     *
+     * @return float
+     **/
+    public function balance()
+    {
+        return -$this->amount;
+    }
+
+    /**
      * Returns the money formatted credit amount or a hyphen if null
      *
      * @return string
      **/
     public function getCredit()
     {
-        return $this->getAmount('credit');
+        if ($this->isDebit()) {
+            return '-';
+        }
+        return $this->formatAmount();
     }
 
     /**
@@ -43,7 +50,10 @@ class Transaction extends Model
      **/
     public function getDebit()
     {
-        return $this->getAmount('debit');
+        if ($this->isCredit()) {
+            return '-';
+        }
+        return $this->formatAmount();
     }
 
     /**
@@ -51,28 +61,10 @@ class Transaction extends Model
      *
      * @return string
      **/
-    public function getAmount($type)
-    {
-        // If the amount of that type is null, return hyphen
-        if (is_null($this->$type)) {
-            return '-';
-        }
-        
+    public function formatAmount()
+    { 
         // Return money formatted number
-        return money_format('%(#10n', $this->$type);
-    }
-
-    /**
-     * Returns the monetary value of the transaction as signed float
-     *
-     * @return float
-     **/
-    public function getValue()
-    {
-        if ($this->isDebit()) {
-            return (float) -$this->debit;
-        }
-        return (float) $this->credit;
+        return money_format('%(#10n', $this->amount);
     }
 
     /**
@@ -92,7 +84,7 @@ class Transaction extends Model
      **/
     public function isDebit()
     {
-        return is_null($this->credit);
+        return $this->amount < 0;
     }
 
     /**
@@ -102,7 +94,7 @@ class Transaction extends Model
      **/
     public function isReconciled()
     {
-        return !is_null($this->reconciliation);
+        return is_null($this->reconciliation) == false;
     }
 
     /**
@@ -123,7 +115,7 @@ class Transaction extends Model
         if ($this->isCredit()) {
             return $this->hasOne('App\Reconciliation', 'credit_id', 'id');
         }
-        return $this->hasOne('App\Reconciliation', 'debit_id', 'id');
+        return $this->hasOne('App\Reconciliation', 'debit_id');
     }
 
     /**
@@ -133,18 +125,10 @@ class Transaction extends Model
      **/
     public function reconciliationCandidates()
     {
-        if ($this->isDebit()) {
-            return self::where('credit', $this->debit)
-                ->get()
-                ->filter( function($transaction) {
-                    return !$transaction->isReconciled();
-                });
-        }
-
-        return self::where('debit', $this->credit)
+        return self::where('amount', -$this->amount)
             ->get()
             ->filter( function($transaction) {
-                return $transaction->isReconciled() == false;
+                return !$transaction->isReconciled();
             });
     }
 

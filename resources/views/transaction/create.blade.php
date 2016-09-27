@@ -14,10 +14,6 @@
         {!! Form::select('account_id', $accounts, null, ['class' => 'form-control']) !!}
     </div>
     <div class="form-group">
-        {!! Form::label('type', 'Type') !!}
-        {!! Form::select('type', $types, null, ['class' => 'form-control']) !!}
-    </div>
-    <div class="form-group">
         {!! Form::label('amount', 'Amount') !!}
         <div class="input-group">
             <span class="input-group-addon">$</span>
