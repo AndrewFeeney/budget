@@ -10,4 +10,20 @@ class Reconciliation extends Model
         'credit_id',
         'debit_id',
     ];
+
+    /**
+     * A reconciliation has one credit transaction
+     **/
+    public function credit()
+    {
+        return $this->belongsTo('App\Transaction');
+    }
+
+    /**
+     * A reconciliation has one debit transaction
+     **/
+    public function debit()
+    {
+        return $this->belongsTo('App\Transaction');
+    }
 }

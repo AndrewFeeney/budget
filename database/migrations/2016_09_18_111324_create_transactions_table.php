@@ -16,8 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
             $table->date('date');
-            $table->decimal('credit')->nullable();
-            $table->decimal('debit')->nullable();
+            $table->decimal('amount');
             $table->integer('account_id')->unsigned();
             $table->foreign('account_id')->references('id')->on('accounts');
             $table->string('reference')->nullable();

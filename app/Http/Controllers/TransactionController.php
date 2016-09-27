@@ -29,7 +29,6 @@ class TransactionController extends Controller
     {        
         return view('transaction.create', [
             'accounts' => Account::all()->pluck('name', 'id'),
-            'types' => Transaction::TYPES
         ]);
     }
 
@@ -44,18 +43,10 @@ class TransactionController extends Controller
         $this->validate($request, [
             'date' => 'date|required',
             'account_id' => 'required|exists:accounts,id',
-            'type' => 'in:Credit,Debit',
-            'amount' => 'required',
+            'amount' => 'required|numeric',
         ]);
-
-        if ($request->type == 'Credit') {
-            $amount['credit'] = $request->amount;
-        }
-        else {
-            $amount['debit'] = $request->amount;
-        }
-
-        Transaction::create($request->only(['date', 'amount', 'account_id']) + $amount);
+        
+        Transaction::create($request->all());
     
         return redirect()->route('transaction.index');
     }
@@ -77,9 +68,18 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Transaction $transaction)
     {
-        //
+        if ($transaction->isReconciled()) {
+            return redirect()
+                ->route('transaction.index')
+                ->withError('Transaction must be unreconciled before being edited.');
+        }
+
+        return view('transaction.edit', [
+            'transaction' => $transaction,
+            'accounts' => Account::all()->pluck('name', 'id'),
+        ]);
     }
 
     /**
@@ -89,9 +89,17 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Transaction $transaction)
     {
-        //
+        $this->validate($request, [
+            'date' => 'date|required',
+            'account_id' => 'required|exists:accounts,id',
+            'amount' => 'required|numeric',
+        ]);
+        
+        $transaction->update($request->all());
+    
+        return redirect()->route('transaction.index');
     }
 
     /**
