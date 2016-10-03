@@ -32,7 +32,7 @@ class ReconciliationController extends Controller
             'candidates' => $transaction->reconciliationCandidates()
                 ->keyBy('id')
                 ->map( function($candidate) {
-                    return $candidate->date . ' ' . $candidate->outputValue() . ' ' . $candidate->reference;
+                    return $candidate->date . ' ' . $candidate->formatAmount() . ' ' . $candidate->reference;
                 })
         ]);
     }

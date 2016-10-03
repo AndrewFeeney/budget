@@ -8,7 +8,7 @@
     <h4>
         {{ $transaction->date }}
         {{ $transaction->account->name }}
-        {{ $transaction->outputValue() }}
+        {{ $transaction->formatAmount() }}
         {{ $transaction->reference }}
     </h4>
     <div class="form-group">

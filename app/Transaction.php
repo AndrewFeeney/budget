@@ -98,16 +98,6 @@ class Transaction extends Model
     }
 
     /**
-     *  Returns the signed value of the transaction money formatted
-     *
-     *  @return string
-     **/
-    public function outputValue()
-    {
-        return money_format('%(#10n', $this->getValue());
-    }
-
-    /**
      * A Transaction has one reconciliation
      **/
     public function reconciliation()
