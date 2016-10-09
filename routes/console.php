@@ -16,3 +16,12 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('perms', function() {
+    $process = new Symfony\Component\Process\Process('
+        chgrp -R www-data storage bootstrap/cache;
+        chmod -R u+rwX,go+rX,go-w storage bootstrap/cache;
+    ');
+    $process->setWorkingDirectory(base_path());
+    $process->run();
+})->describe('Set correct file permissions for storage and bootstrap/cache folders.');
