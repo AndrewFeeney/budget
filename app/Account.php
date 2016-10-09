@@ -26,7 +26,7 @@ class Account extends Model
     public function balance()
     {
         return money_format('%(#10n', $this->transactions->sum( function($transaction) {
-            return $transaction->getValue();
+            return $transaction->amount;
         }));
     }
 

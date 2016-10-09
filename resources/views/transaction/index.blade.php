@@ -38,6 +38,31 @@
                                 <i class="glyphicon glyphicon-link"></i> Reconcile
                             </a>
                         @endif
+                        <div class="dropdown pull-right">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-option-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                @if($transaction->isReconciled())
+                                    <li>
+                                        <a href="{{ route('transaction.reconciliation.destroy', [
+                                            'transaction' => $transaction,
+                                            'reconciliation' => $transaction->reconciliation            
+                                        ]) }}">
+                                            <i class="glyphicon glyphicon-remove"></i>
+                                            Unreconcile
+                                        </a>
+                                    </li>
+                                @else
+                                    <li>
+                                        <a href="{{ route('transaction.edit', compact('transaction')) }}">
+                                            <i class="glyphicon glyphicon-edit"></i>
+                                            Edit
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
                     </td>
                 </tr>
             @endforeach
