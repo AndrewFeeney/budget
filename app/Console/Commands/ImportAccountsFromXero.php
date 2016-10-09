@@ -60,7 +60,7 @@ class ImportAccountsFromXero extends Command
             ->load('Accounting\\Account')
             ->execute();
         
-        collect($xeroAccounts)->each( function($account) {
+        collect($xeroAccounts)->each(function ($account) {
             $this->accounts->saveFromXero($account);
         });
     }
