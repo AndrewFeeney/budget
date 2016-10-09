@@ -22,7 +22,19 @@ class ImportAccountsFromXero extends Command
      */
     protected $description = 'Command description';
 
-    private $accounts, $xeroApp;
+    /**
+     * The Account model repository
+     *
+     * @var App\Repositories\Account
+     **/
+    private $accounts; 
+
+    /**
+     * The Xero private application adapted
+     * 
+     * XeroPrivate
+     **/
+    private $xeroApp;
  
     /**
      * Create a new command instance.
