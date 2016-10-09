@@ -15,11 +15,16 @@ class CreateAccountsTable extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('code')->nullable();
             $table->string('name');
             $table->string('type');
-            $table->text('description');
-            $table->decimal('balance')->default(0.0);
-            $table->decimal('unallocated')->default(0.0);
+            $table->string('bank_account_number')->nullable();
+            $table->string('status');
+            $table->text('description')->nullable();
+            $table->string('bank_account_type')->nullable();
+            $table->string('currency_code') -> nullable();
+            $table->string('tax_type')->nullable();
+            $table->boolean('is_system_account');
             $table->timestamps();
         });
     }

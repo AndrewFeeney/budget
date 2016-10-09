@@ -13,9 +13,16 @@ class Account extends Model
     ];
 
     protected $fillable = [
+        'code',
         'name',
         'type',
+        'bank_account_number',
+        'status',
         'description',
+        'bank_account_type',
+        'currency_code',
+        'tax_type',
+        'is_system_account'
     ];
 
     /**
