@@ -17,7 +17,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
 
-Artisan::command('perms', function() {
+Artisan::command('perms', function () {
     $process = new Symfony\Component\Process\Process('
         chgrp -R www-data storage bootstrap/cache;
         chmod -R u+rwX,go+rX,go-w storage bootstrap/cache;
