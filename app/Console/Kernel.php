@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\ImportAccountsFromXero::class
+        \App\Console\Commands\SyncAccountsWithXero::class,
+        \App\Console\Commands\SyncJournalsWithXero::class,
     ];
 
     /**
