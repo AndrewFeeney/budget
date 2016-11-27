@@ -15,7 +15,8 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/', 'HomeController@index');
+
     Route::resource('account', 'AccountController');
-    Route::resource('transaction', 'TransactionController');
-    Route::resource('transaction.reconciliation', 'ReconciliationController');
+    Route::resource('journal', 'JournalController');
+    Route::resource('projected-journal', 'ProjectedJournalController');
 });
