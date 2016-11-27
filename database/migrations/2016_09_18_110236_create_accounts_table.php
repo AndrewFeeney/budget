@@ -15,6 +15,7 @@ class CreateAccountsTable extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('xero_id')->unique()->nullable();
             $table->string('code')->nullable();
             $table->string('name');
             $table->string('type');

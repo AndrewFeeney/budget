@@ -14,19 +14,20 @@ class Accounts extends Repository
     }
 
     /**
-     * Takes the given xero Account object and turns it into a local Account object
-     * which is saved to the database
+     * Takes the given xero Account object and syncs it with the matching local Account object
+     * or creates a new one and saves it to the database
      *
      * @param XeroPHP\Models\Accounting\Account $xeroAccount
-     * @return App\Account
+     * @return App\Models\Account
      **/
-    public function saveFromXero(XeroAccount $xeroAccount)
+    public function sync(XeroAccount $xeroAccount)
     {
-        // Convert Xero Account object to a collection
-        $accountData = collect($xeroAccount->toStringArray());
+        // Convert Xero Account object to an array
+        $accountData = $xeroAccount->toStringArray();
 
-        // Save the array data to a new local Account object
-        return Account::create([
+        // Update the account entry with a matching account_id or create it if it does
+        // not yet exist
+        return Account::updateOrCreate(['xero_id' => $accountData['AccountID'],], [
             'code' => $accountData['Code'] ?? null,
             'name' => $accountData['Name'],
             'type' => $accountData['Type'],
@@ -38,5 +39,18 @@ class Accounts extends Repository
             'tax_type' => $accountData['TaxType'],
             'is_system_account' => isset($accountData['SystemAccount'])
         ]);
+    }
+
+    /**
+     * Takes the given array of Account objects and syncs them with those stored
+     * in the local database
+     *
+     * @param array $accounts
+     **/
+    public function syncMultiple($accounts)
+    {
+        collect($accounts)->each(function ($account) {
+            $this->sync($account);
+        });
     }
 }
