@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use XeroPHP\Models\Accounting\Account as XeroAccount;
 
-use App\Account;
+use App\Models\Account;
 
 class Accounts extends Repository
 {

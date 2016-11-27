@@ -14,28 +14,23 @@
 /**
  * Account factory
  **/
-$factory->define(App\Account::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Account::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->word,
         'description' => $faker->sentence,
-        'type' => array_rand(App\Account::TYPES),
+        'type' => array_rand(App\Models\Account::TYPES),
+        'status' => 'ACTIVE',
+        'is_system_account' => false,
     ];
 });
 
 /**
- * Reconciliation factory
+ * Projected Journal factory
  **/
-$factory->define(App\Reconciliation::class, function (Faker\Generator $faker) {
-    return [];
-});
-
-/**
- * Transaction factory
- **/
-$factory->define(App\Transaction::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\ProjectedJournal::class, function (Faker\Generator $faker) {
     return [
         'date' => $faker->date,
-        'amount' => $faker->randomFloat(2, -1000, 1000),
+        'source_type' => array_rand(App\Models\ProjectedJournal::SOURCE_TYPES),
     ];
 });
 

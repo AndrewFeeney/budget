@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-use App\Account;
+use App\Models\Account;
 
 class AccountController extends Controller
 {
