@@ -26,17 +26,17 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
     /**
      * Creates a new account model and associated models and returns it
      *
-     * @return App\Account
+     * @return App\Models\Account
      **/
     public function createAccount($data = [])
     {
-        return factory(App\Account::class)->create($data);
+        return factory(App\Models\Account::class)->create($data);
     }
     
     /**
      * Creates a new reconciliation model and associated models and returns it
      *
-     * @return App\Account
+     * @return App\Models\Account
      **/
     public function createReconciliation($data = [])
     {
