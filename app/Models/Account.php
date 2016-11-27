@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +13,7 @@ class Account extends Model
     ];
 
     protected $fillable = [
+        'xero_id',
         'code',
         'name',
         'type',
@@ -32,9 +33,25 @@ class Account extends Model
      **/
     public function balance()
     {
-        return money_format('%(#10n', $this->transactions->sum( function($transaction) {
-            return $transaction->amount;
+        return money_format('%(#10n', $this->journalLines->sum( function($transaction) {
+            return $transaction->gross_amount;
         }));
+    }
+
+    /**
+     * An account has many JournalLines
+     **/
+    public function journalLines()
+    {
+        return $this->hasMany('App\Models\JournalLine', 'account_xero_id', 'xero_id');
+    }
+
+    /**
+     * An Account has many Journals
+     **/
+    public function journals()
+    {
+        return $this->hasMany('App\Models\Journal', 'source_id', 'xero_id');
     }
 
     /**
