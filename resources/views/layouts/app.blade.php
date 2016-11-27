@@ -43,7 +43,8 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                     <li><a href="{{ route('account.index') }}"> Accounts </a></li>
-                    <li><a href="{{ route('transaction.index') }}"> Transactions </a></li>
+                    <li><a href="{{ route('journal.index') }}"> Journals </a></li>
+                    <li><a href="{{ route('projected-journal.index') }}"> Projected Journals </a></li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->
@@ -77,15 +78,17 @@
             </div>
         </div>
     </nav>
-    
+
     <div class="container">
         @if ($errors->count() > 0)
             {{ dump($errors) }}
-        @endif    
+        @endif
+
         @yield('content')
     </div>
 
     <!-- Scripts -->
+    @yield('javascript')
     <script src="/js/app.js"></script>
 </body>
 </html>

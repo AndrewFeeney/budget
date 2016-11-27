@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('select2');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -13,8 +14,18 @@ require('./bootstrap');
  * the application, or feel free to tweak this setup for your needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
-
 const app = new Vue({
-    el: 'body'
+    el: 'body',
+    data: {
+    },
+    components: {
+    },
+});
+
+$(document).ready(function() {
+
+    $('.select2').select2({
+        theme: "bootstrap"
+    });
+
 });
