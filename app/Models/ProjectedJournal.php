@@ -37,15 +37,18 @@ class ProjectedJournal extends Model
     protected $guarded = [];
 
     /**
-     * Returns the Account which is the origin of the projected journal
+     * Returns the total amount transferred in the journal
      *
-     * @return App\Models\Account
+     * @return float
      **/
-    public function fromAccount()
+    public function amount()
     {
         return $this->projectedJournalLines()
-            ->where('amount', '<', 0)
-            ->first();
+            ->where('amount', '>', 0)
+            ->get()
+            ->sum(function ($journalLine) {
+                return $journalLine->amount;
+            });
     }
 
     /**
@@ -56,16 +59,9 @@ class ProjectedJournal extends Model
         return $this->hasMany(ProjectedJournalLine::class);
     }
 
-    /**
-     * Returns the Account which is the destination of the projected journal
-     *
-     * @return App\Models\Account
-     **/
-    public function toAccount()
+    public function type()
     {
-        return $this->projectedJournalLines()
-            ->where('amount', '>', 0)
-            ->first();
+        return self::SOURCE_TYPES[$this->source_type];
     }
 }
 

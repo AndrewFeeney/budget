@@ -53,4 +53,17 @@ class Accounts extends Repository
             $this->sync($account);
         });
     }
+
+    /**
+     * Returns the system account matching the given name
+     * @param string $name
+     * @return App\Models\Account
+     **/
+    public function getSystemAccount($name)
+    {
+        return $this->filter([
+            'name' => $name,
+            'is_system_account' => true
+        ])->first();
+    }
 }

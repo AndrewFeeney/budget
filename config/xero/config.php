@@ -52,6 +52,6 @@ return [
 
         'rsa_private_key'  => env('XERO_RSA_PRIVATE_KEY'),
         'rsa_public_key'   => env('XERO_RSA_PUBLIC_KEY'),
-    ]
+    ],
 
 ];

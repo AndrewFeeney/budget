@@ -19,4 +19,5 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('account', 'AccountController');
     Route::resource('journal', 'JournalController');
     Route::resource('projected-journal', 'ProjectedJournalController');
+    Route::resource('projected-income', 'ProjectedIncomeController');
 });

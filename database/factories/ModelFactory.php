@@ -21,6 +21,7 @@ $factory->define(App\Models\Account::class, function (Faker\Generator $faker) {
         'type' => array_rand(App\Models\Account::TYPES),
         'status' => 'ACTIVE',
         'is_system_account' => false,
+        'xero_id' => $faker->uuid
     ];
 });
 

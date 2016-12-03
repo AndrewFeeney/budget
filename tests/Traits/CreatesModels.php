@@ -36,6 +36,61 @@ trait CreatesModels
     }
 
     /**
+     * Creates an accounts receivable Account model and returns it
+     *
+     * @param array $attributes
+     * @return App\Models\Account
+     **/
+    public function createAccountsReceivableAccount()
+    {
+        return factory(Account::class)->create([
+            'code' => 610,
+            'name' => 'Accounts Receivable',
+            'type' => 'CURRENT',
+            'status' => 'ACTIVE',
+            'tax_type' => 'BASEXCLUDED',
+            'is_system_account' => 1
+        ]);
+    }
+
+    /**
+     * Creates a bank Account model and returns it
+     *
+     * @param array $attributes
+     * @return App\Models\Account
+     **/
+    public function createBankAccount()
+    {
+        return factory(Account::class)->create([
+            'code' => 'TESTBANK',
+            'name' => 'Test Bank Account',
+            'type' => 'BANK',
+            'status' => 'ACTIVE',
+            'bank_account_type' => 'BANK',
+            'tax_type' => 'BASEXCLUDED',
+            'is_system_account' => 0
+        ]);
+    }
+
+    /**
+     * Creates a sales Account model and returns it
+     *
+     * @param array $attributes
+     * @return App\Models\Account
+     **/
+    public function createSalesAccount()
+    {
+        return factory(Account::class)->create([
+            'code' => 200,
+            'name' => 'Sales',
+            'type' => 'REVENUE',
+            'status' => 'ACTIVE',
+            'tax_type' => 'OUTPUT',
+            'is_system_account' => 0
+        ]);
+    }
+
+    /**
      * Creates a Projected Journal model and returns it
      *
      * @param array $attributes
@@ -58,6 +113,24 @@ trait CreatesModels
         \Auth::login($user);
 
         return $user;
+    }
+
+    /**
+     * Creates a gst Account model and returns it
+     *
+     * @param array $attributes
+     * @return App\Models\Account
+     **/
+    public function createGSTAccount($attributes = [])
+    {
+        return factory(Account::class)->create([
+            'code' => 820,
+            'name' => 'GST',
+            'type' => 'CURRLIAB',
+            'status' => 'ACTIVE',
+            'tax_type' => 'BASEXCLUDED',
+            'is_system_account' => 1
+        ]);
     }
 
     /**
