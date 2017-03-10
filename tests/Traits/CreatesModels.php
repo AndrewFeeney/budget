@@ -13,6 +13,18 @@ trait CreatesModels
     private $account;
 
     /**
+     * The journal being used for test purposes
+     * @var App\Models\Journal
+     **/
+
+    private $journal;
+    /**
+     * The journal line being used for test purposes
+     * @var App\Models\JournalLine
+     **/
+    private $journalLine;
+
+    /**
      * The ProjectedJournal being used for test purposes
      * @var App\Models\ProjectedJournal
      **/
@@ -70,6 +82,61 @@ trait CreatesModels
             'tax_type' => 'BASEXCLUDED',
             'is_system_account' => 0
         ]);
+    }
+
+    /**
+     * Creates all models required for some income
+     **/
+    public function createIncome($attributes)
+    {
+        $amount = $attributes['amount'] ?? 1000;
+        $date = $attributes['date'] ?? app(\Faker\Generator::class)
+            ->datetime
+            ->format('Y-m-d h:m:s');
+
+        $journal = $this->getTestObject('journal', [
+            'source_type' => 'ACCREC',
+            'date' => $date
+        ]);
+
+        $this->createJournalLine([
+            'journal_id' => $journal->id,
+            'gross_amount' => $amount,
+            'net_amount' => $amount,
+            'tax_amount' => 0
+        ]);
+        $this->getTestObject('journalLine', [
+            'journal_id' => $journal->id,
+            'gross_amount' => -$amount,
+            'net_amount' => -$amount,
+            'tax_amount' => 0
+        ]);
+    }
+
+    /**
+     * Creates a Journal model and returns it
+     * @return App\Models\Journal
+     **/
+    public function createJournal($attributes = [])
+    {
+        return factory(App\Models\Journal::class)->create($attributes);
+    }
+
+    /**
+     * Creates a JournalLine model and returns it
+     * @return App\Models\JournalLine
+     **/
+    public function createJournalLine($attributes = [])
+    {
+        $account = $this->getTestObject('account');
+        $journal = $this->getTestObject('journal');
+
+        return factory(App\Models\JournalLine::class)->create([
+            'journal_id' => $journal->id,
+            'account_xero_id' => $account->xero_id,
+            'account_type' => $account->type,
+            'account_name' => $account->name,
+        ] + $attributes);
     }
 
     /**
@@ -193,19 +260,12 @@ trait CreatesModels
         if (is_null($this->$propertyName)) {
 
             // Generate new object
-            $object = $this->{'create' . ucfirst($propertyName)}();
+            $object = $this->{'create' . ucfirst($propertyName)}($attributes);
 
             // Set the property as the new object
             $this->setTestObject($propertyName, $object);
         }
 
-        // If any attributes have been provided we'll set them on the object
-        if (!empty($attributes)) {
-            collect($attributes)->each( function($value, $key) use ($propertyName) {
-                $this->$propertyName->$key = $value;
-                $this->$propertyName->save();
-            });
-        }
         return $this->$propertyName;
     }
 
