@@ -56,4 +56,40 @@ class DateCalculatorTest extends TestCase
             $calculator->getEndOfThisFinancialYear()->format('Y-m-d H:i:s')
         );
     }
+
+    /** @test */
+    public function get_this_financial_year_returns_expected_result_on_1st_jan()
+    {
+        Carbon::setTestNow(Carbon::parse('1st January 2017 9:00:00am'));
+
+        $calculator = app(DateCalculator::class);
+
+        $financialYear = $calculator->getThisFinancialYear();
+        $this->assertEquals(
+            '2016-07-01 00:00:00',
+            $financialYear->getStartDate()->format('Y-m-d H:i:s')
+        );
+        $this->assertEquals(
+            '2017-06-30 00:00:00',
+            $financialYear->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
+
+    /** @test */
+    public function get_this_financial_year_returns_expected_result_on_31st_dec()
+    {
+        Carbon::setTestNow(Carbon::parse('31st December 2016 9:00:00am'));
+
+        $calculator = app(DateCalculator::class);
+
+        $financialYear = $calculator->getThisFinancialYear();
+        $this->assertEquals(
+            '2016-07-01 00:00:00',
+            $financialYear->getStartDate()->format('Y-m-d H:i:s')
+        );
+        $this->assertEquals(
+            '2017-06-30 00:00:00',
+            $financialYear->getEndDate()->format('Y-m-d H:i:s')
+        );
+    }
 }
