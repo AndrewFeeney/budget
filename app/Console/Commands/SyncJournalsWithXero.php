@@ -24,11 +24,11 @@ class SyncJournalsWithXero extends Command
 
     /**
      * The Xero private application adapter
-     * 
+     *
      * XeroPrivate
      **/
     private $xeroAdapater;
- 
+
     /**
      * Create a new command instance.
      *
@@ -37,8 +37,8 @@ class SyncJournalsWithXero extends Command
     public function __construct(ConnectsWithXeroAPI $xeroAdapter)
     {
         parent::__construct();
-        
-        $this->xeroAdapter = $xeroAdapter; 
+
+        $this->xeroAdapter = $xeroAdapter;
     }
 
     /**
