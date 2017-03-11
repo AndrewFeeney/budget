@@ -17,9 +17,9 @@ class DateCalculator
     public function getThisFinancialYear()
     {
         return new DatePeriod(
-            Carbon::now()->month(6)->day(1),
+            $this->getStartOfThisFinancialYear(),
             CarbonInterval::year(),
-            1
+            $this->getEndOfThisFinancialYear()
         );
     }
 
@@ -30,10 +30,10 @@ class DateCalculator
      **/
     public function getStartOfThisFinancialYear()
     {
-        $startOfFinancialYear = Carbon::parse('July 1st Midnight');
+        $startOfFinancialYear = Carbon::parse('first day of July');
 
         // If the current time is in the first half of the current calendar year
-        if (Carbon::now()->format('i') < 6) {
+        if (intval(Carbon::now()->format('m')) < 6) {
             // Return the 1st of July of last year
             return $startOfFinancialYear->subYear();
         }
