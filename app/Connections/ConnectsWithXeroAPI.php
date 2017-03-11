@@ -59,7 +59,7 @@ class ConnectsWithXeroAPI implements XeroAPIConnection
         // First we need to make sure the accounts are in sync
         $this->syncAccounts();
 
-        // Next we'll sync the journals 
+        // Next we'll sync the journals
         $xeroJournals = $this->syncAllObjectsOfType('Journal');
     }
 
@@ -84,11 +84,11 @@ class ConnectsWithXeroAPI implements XeroAPIConnection
                 ->load("Accounting\\$objectType")
                 ->offset($offset * 100)
                 ->execute());
-            
+
             // Sync accounts with Accounts stored in database
             $this->journals->syncMultiple($result);
 
-            // Increment offset    
+            // Increment offset
             $offset++;
 
             dump($offset * 100);
