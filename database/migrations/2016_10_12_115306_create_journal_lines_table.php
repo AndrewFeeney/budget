@@ -19,8 +19,10 @@ class CreateJournalLinesTable extends Migration
             $table->integer('journal_id')->unsigned();
             $table->foreign('journal_id')->references('id')->on('journals');
             $table->string('account_xero_id');
+            $table->foreign('account_xero_id')->references('xero_id')->on('accounts');
             $table->string('account_type');
             $table->string('account_name');
+            $table->string('account_code')->nullable();
             $table->string('description')->nullable();
             $table->float('net_amount');
             $table->float('gross_amount');

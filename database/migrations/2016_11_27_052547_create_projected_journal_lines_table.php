@@ -17,7 +17,7 @@ class CreateProjectedJournalLinesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('projected_journal_id');
             $table->foreign('projected_journal_id')->references('id')->on('projected_journals');
-            $table->unsignedInteger('account_xero_id');
+            $table->string('account_xero_id');
             $table->foreign('account_xero_id')->references('xero_id')->on('accounts');
             $table->float('net_amount');
             $table->float('gross_amount');
