@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     /**
@@ -32,7 +34,7 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
     {
         return factory(App\Models\Account::class)->create($data);
     }
-    
+
     /**
      * Creates a new reconciliation model and associated models and returns it
      *
@@ -59,7 +61,7 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
         $account = $this->createAccount();
 
         // Create and return transaction
-        return factory(App\Transaction::class)->create(['account_id' => $account->id] + $data); 
+        return factory(App\Transaction::class)->create(['account_id' => $account->id] + $data);
     }
 
     /**
@@ -70,5 +72,13 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function createUser($data = [])
     {
         return factory(App\User::class)->create($data);
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        // Reset Carbon
+        Carbon::setTestNow();
     }
 }
