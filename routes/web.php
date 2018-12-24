@@ -14,10 +14,11 @@
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function() {
-    Route::get('/', 'HomeController@index');
+    Route::get('/', 'HomeController@index')->name('home');
 
     Route::resource('account', 'AccountController');
     Route::resource('journal', 'JournalController');
     Route::resource('projected-journal', 'ProjectedJournalController');
     Route::resource('projected-income', 'ProjectedIncomeController');
+    Route::resource('setting', 'SettingController');
 });

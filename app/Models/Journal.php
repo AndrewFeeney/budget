@@ -11,25 +11,40 @@ class Journal extends Model
 
     public function amount()
     {
-        // If the transfer represents no movement of funds into or out of the business
-        // we can return 0
-        if ($this->isCashflowNeutral()) {
-            return 0;
+        // Get only the journal lines which involve a bank account
+        $bankAccountJournalLines = $this->journalLines
+            ->filter(
+                function ($journalLine) {
+                    return $journalLine->account_type == 'BANK' &&
+                    $journalLine->account->currency_code == 'AUD';
+                }
+        );
+
+        return $bankAccountJournalLines->sum(function ($journalLine) {
+            return $journalLine->net_amount;
+        });
+    }
+
+    /**
+     *  A Journal belongs to an account
+     **/
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'source_xero_id', 'xero_id');
+    }
+
+    /**
+     * Returns the currency code of the Journal's account
+     **/
+    public function accountCurrency()
+    {
+        $account = $this->account;
+
+        if (is_null($account)) {
+            return null;
         }
 
-        // If the journal represents movement of funds out of the business we
-        // return the negative amount
-        if ($this->isCashflowNegative()) {
-            return $this->totalSpent();
-        }
-
-        // If the journal represents movement of funds in to the business we return
-        // the positive amount
-        if ($this->isCashflowPositive()) {
-            return $this->totalReceived();
-        }
-
-        throw new \Exception('Unrecognised source type: ' . $this->source_type);
+        return $account->currency_code;
     }
 
     /**
@@ -120,6 +135,16 @@ class Journal extends Model
     {
         return $this->journalLines()
             ->where('net_amount', '>', 0)
+            ->get()
+            ->sum(function ($journalLine) {
+                return $journalLine->net_amount;
+            });
+    }
+
+    public function totalSpent()
+    {
+        return $this->journalLines()
+            ->where('net_amount', '<', 0)
             ->get()
             ->sum(function ($journalLine) {
                 return $journalLine->net_amount;

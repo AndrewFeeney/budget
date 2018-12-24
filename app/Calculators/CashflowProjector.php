@@ -15,8 +15,10 @@ class CashflowProjector
      **/
     public function projectedCashFlowForPeriod(\DatePeriod $period)
     {
-        // Sum journals from between start of period and now
+        // Sum income journals from between start of period and now
         $sumOfJournals = Journal::betweenDates($period->start, Carbon::now())
+            ->whereSourceType('ACCRECPAYMENT')
+            ->with('journalLines')
             ->get()
             ->sum(function ($journal) {
                 return $journal->amount();
@@ -24,7 +26,9 @@ class CashflowProjector
 
         // Sum projected journals from between now and end of period
         $sumOfProjectedJournals = ProjectedJournal::where(
-            'date', '>', $period->start->format('Y-m-d')
+            'date',
+            '>',
+            $period->start->format('Y-m-d')
         )->where('date', '<', \Carbon\Carbon::today()->format('Y-m-d'))
             ->get()
             ->sum(function ($journal) {

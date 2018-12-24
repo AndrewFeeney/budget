@@ -3,6 +3,7 @@
 @section('content')
 
 <div class="container">
+    <h1> Projected Journals </h1>
     <a href="{{ route('projected-income.create') }}" class="btn btn-primary pull-right">
         <i class="glyphicon glyphicon-plus"></i> Add Projected Income
     </a>

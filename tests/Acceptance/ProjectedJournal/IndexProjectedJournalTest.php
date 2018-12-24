@@ -12,9 +12,9 @@ class IndexProjectedJournalTest extends TestCase
     /** @test */
     public function a_user_can_visit_the_index_projected_journal_page()
     {
-        $this->createAndLoginUser();
-
         $projectedJournal = $this->getTestObject('projectedJournal');
+
+        $this->createAndLoginUser();
 
         $this->visit(route('projected-journal.index'));
 

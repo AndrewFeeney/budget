@@ -30,12 +30,12 @@ class DateCalculator
      **/
     public function getStartOfThisFinancialYear()
     {
-        $startOfFinancialYear = Carbon::parse('first day of July');
+        $startOfFinancialYear = Carbon::parse('July')
+            ->startOfMonth()
+            ->startOfDay();
 
-        // If the current time is in the first half of the current calendar year
-        if (intval(Carbon::now()->format('m')) < 6) {
-            // Return the 1st of July of last year
-            return $startOfFinancialYear->subYear();
+        while ($startOfFinancialYear->gt(Carbon::now())) {
+            $startOfFinancialYear->subYear();
         }
 
         return $startOfFinancialYear;
@@ -48,15 +48,14 @@ class DateCalculator
      **/
     public function getEndOfThisFinancialYear()
     {
-        $startOfFinancialYear = Carbon::parse('June 30th Midnight');
+        $endOfFinancialYear = (new Carbon('June '.Carbon::now()->year))
+            ->endOfMonth()
+            ->startOfDay();
 
-        // If the current time is in the last half of the current calendar year
-        if (Carbon::now()->format('i') > 6) {
-            // Return the 30th June of next year
-            return $startOfFinancialYear->addYear();
+        while ($endOfFinancialYear->lt(Carbon::now())) {
+            $endOfFinancialYear->addYear();
         }
 
-        return $startOfFinancialYear;
+        return $endOfFinancialYear;
     }
 }
-

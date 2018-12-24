@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App\Calculators\DateCalculator;
 use Carbon\Carbon;
@@ -19,6 +16,8 @@ class DateCalculatorTest extends TestCase
             '2016-07-01 00:00:00',
             $calculator->getStartOfThisFinancialYear()->format('Y-m-d H:i:s')
         );
+
+        Carbon::setTestNow();
     }
 
     /** @test */
@@ -31,6 +30,8 @@ class DateCalculatorTest extends TestCase
             '2016-07-01 00:00:00',
             $calculator->getStartOfThisFinancialYear()->format('Y-m-d H:i:s')
         );
+
+        Carbon::setTestNow();
     }
 
     /** @test */
@@ -43,6 +44,8 @@ class DateCalculatorTest extends TestCase
             '2017-06-30 00:00:00',
             $calculator->getEndOfThisFinancialYear()->format('Y-m-d H:i:s')
         );
+
+        Carbon::setTestNow();
     }
 
     /** @test */
@@ -55,6 +58,8 @@ class DateCalculatorTest extends TestCase
             '2017-06-30 00:00:00',
             $calculator->getEndOfThisFinancialYear()->format('Y-m-d H:i:s')
         );
+
+        Carbon::setTestNow();
     }
 
     /** @test */
@@ -65,28 +70,34 @@ class DateCalculatorTest extends TestCase
         $calculator = app(DateCalculator::class);
 
         $financialYear = $calculator->getThisFinancialYear();
+
         $this->assertEquals(
             '2016-07-01 00:00:00',
             $financialYear->getStartDate()->format('Y-m-d H:i:s')
         );
+
         $this->assertEquals(
             '2017-06-30 00:00:00',
             $financialYear->getEndDate()->format('Y-m-d H:i:s')
         );
+
+        Carbon::setTestNow();
     }
 
     /** @test */
     public function get_this_financial_year_returns_expected_result_on_31st_dec()
     {
-        Carbon::setTestNow(Carbon::parse('31st December 2016 9:00:00am'));
+        Carbon::setTestNow(Carbon::parse('31st December 2016 9:00:00am UTC'));
 
         $calculator = app(DateCalculator::class);
 
         $financialYear = $calculator->getThisFinancialYear();
+
         $this->assertEquals(
             '2016-07-01 00:00:00',
             $financialYear->getStartDate()->format('Y-m-d H:i:s')
         );
+
         $this->assertEquals(
             '2017-06-30 00:00:00',
             $financialYear->getEndDate()->format('Y-m-d H:i:s')

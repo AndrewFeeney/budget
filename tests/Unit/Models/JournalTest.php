@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-
 use App\Models\Journal;
 use Carbon\Carbon;
 
@@ -15,9 +12,7 @@ class JournalTest extends TestCase
     /** @test */
     public function amount_method_returns_total_cashflow_represented_by_journal()
     {
-        $this->createIncome(['amount' => 100]);
-        $journal = $this->getTestObject('journal');
-
+        $journal = $this->createAccountsReceivablePayment(['gross_amount' => 100]);
         $this->assertEquals(100, $journal->amount());
     }
 
@@ -37,7 +32,8 @@ class JournalTest extends TestCase
         ]);
 
         $journals = Journal::betweenDates(
-            Carbon::parse('1999-01-01 00:00:00'), Carbon::parse('2001-01-01 00:00:00')
+            Carbon::parse('1999-01-01 00:00:00'),
+            Carbon::parse('2001-01-01 00:00:00')
         )->get();
 
         // Assert that the included journal is returned in the query

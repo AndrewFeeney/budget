@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Calculators\Calculator;
+use App\Models\Account;
 
 class HomeController extends Controller
 {
@@ -11,9 +12,11 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Calculator $calculator)
     {
         $this->middleware('auth');
+
+        $this->calculator = $calculator;
     }
 
     /**
@@ -23,6 +26,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $bankAccounts = Account::selectedBankAccounts()->get();
+
+        return view('home', [
+            'bankAccounts' => $bankAccounts,
+            'bankTotal'    => $bankAccounts->sum(
+                function ($account) {
+                    return (float) $account->balance();
+                }
+            ),
+            'totalCash' => $this->calculator->getCashBalance()
+        ]);
     }
 }

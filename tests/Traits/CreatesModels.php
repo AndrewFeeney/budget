@@ -2,7 +2,10 @@
 
 use App\Models\Account;
 use App\Models\ProjectedJournal;
+use App\Models\Journal;
+use App\Models\JournalLine;
 use App\User;
+use Carbon\Carbon;
 
 trait CreatesModels
 {
@@ -36,6 +39,12 @@ trait CreatesModels
      **/
     private $user;
 
+    private $bankAccount;
+
+    private $salesAccount;
+
+    private $accountsReceivableAccount;
+
     /**
      * Creates an Account model and returns it
      *
@@ -56,12 +65,13 @@ trait CreatesModels
     public function createAccountsReceivableAccount()
     {
         return factory(Account::class)->create([
-            'code' => 610,
-            'name' => 'Accounts Receivable',
-            'type' => 'CURRENT',
-            'status' => 'ACTIVE',
-            'tax_type' => 'BASEXCLUDED',
-            'is_system_account' => 1
+            'code'              => 610,
+            'name'              => 'Accounts Receivable',
+            'type'              => 'CURRENT',
+            'status'            => 'ACTIVE',
+            'tax_type'          => 'BASEXCLUDED',
+            'is_system_account' => 1,
+            'currency_code'     => 'AUD',
         ]);
     }
 
@@ -74,13 +84,14 @@ trait CreatesModels
     public function createBankAccount()
     {
         return factory(Account::class)->create([
-            'code' => 'TESTBANK',
-            'name' => 'Test Bank Account',
-            'type' => 'BANK',
-            'status' => 'ACTIVE',
+            'code'              => 'TESTBANK',
+            'name'              => 'Test Bank Account',
+            'type'              => 'BANK',
+            'status'            => 'ACTIVE',
             'bank_account_type' => 'BANK',
-            'tax_type' => 'BASEXCLUDED',
-            'is_system_account' => 0
+            'tax_type'          => 'BASEXCLUDED',
+            'is_system_account' => 0,
+            'currency_code'     => 'AUD',
         ]);
     }
 
@@ -94,23 +105,63 @@ trait CreatesModels
             ->datetime
             ->format('Y-m-d h:m:s');
 
-        $journal = $this->getTestObject('journal', [
+        $accRecJournal = $this->getTestObject('journal', [
             'source_type' => 'ACCREC',
-            'date' => $date
+            'date'        => $date
         ]);
 
         $this->createJournalLine([
-            'journal_id' => $journal->id,
-            'gross_amount' => $amount,
-            'net_amount' => $amount,
-            'tax_amount' => 0
+            'journal_id'      => $accRecJournal->id,
+            'account_xero_id' => $this->salesAccount()->xero_id,
+            'gross_amount'    => -$amount,
+            'net_amount'      => -$amount,
+            'tax_amount'      => 0
         ]);
-        $this->getTestObject('journalLine', [
-            'journal_id' => $journal->id,
-            'gross_amount' => -$amount,
-            'net_amount' => -$amount,
-            'tax_amount' => 0
+        $this->createJournalLine([
+            'journal_id'      => $accRecJournal->id,
+            'account_xero_id' => $this->accountsReceivableAccount()->xero_id,
+            'gross_amount'    => $amount,
+            'net_amount'      => $amount,
+            'tax_amount'      => 0
         ]);
+
+        $accRecPaymentJournal = $this->createJournal([
+            'source_type' => 'ACCRECPAYMENT',
+            'date'        => $date
+        ]);
+
+        $this->createJournalLineForAccountInJournal($this->bankAccount(), $accRecPaymentJournal, [
+            'gross_amount'    => $amount,
+            'net_amount'      => $amount,
+            'tax_amount'      => 0
+        ]);
+        $this->createJournalLineForAccountInJournal($this->accountsReceivableAccount(), $accRecPaymentJournal, [
+            'gross_amount'    => -$amount,
+            'net_amount'      => -$amount,
+            'tax_amount'      => 0
+        ]);
+    }
+
+    public function createAccountsReceivablePayment($attributes)
+    {
+        $accRecPaymentJournal = $this->createJournal([
+            'source_type' => 'ACCRECPAYMENT',
+            'date'        => $attributes['date'] ?? Carbon::now()->format('Y-m-d h:i:s'),
+        ]);
+
+        $this->createJournalLineForAccountInJournal($this->bankAccount(), $accRecPaymentJournal, [
+            'gross_amount'    => $attributes['gross_amount'],
+            'net_amount'      => $attributes['net_amount'] ?? $attributes['gross_amount'],
+            'tax_amount'      => $attributes['tax_amount'] ?? 0,
+        ]);
+
+        $this->createJournalLineForAccountInJournal($this->accountsReceivableAccount(), $accRecPaymentJournal, [
+            'gross_amount'    => -$attributes['gross_amount'],
+            'net_amount'      => -($attributes['net_amount'] ?? $attributes['gross_amount']),
+            'tax_amount'      => -($attributes['tax_amount'] ?? 0),
+        ]);
+
+        return $accRecPaymentJournal;
     }
 
     /**
@@ -128,15 +179,17 @@ trait CreatesModels
      **/
     public function createJournalLine($attributes = [])
     {
-        $account = $this->getTestObject('account');
-        $journal = $this->getTestObject('journal');
+        return $this->createJournalLineForAccountInJournal($this->getTestObject('account'), $journal = $this->getTestObject('journal'), $attributes);
+    }
 
-        return factory(App\Models\JournalLine::class)->create([
-            'journal_id' => $journal->id,
+    public function createJournalLineForAccountInJournal(Account $account, Journal $journal, $attributes = [])
+    {
+        return factory(App\Models\JournalLine::class)->create(array_merge([
+            'journal_id'      => $journal->id,
             'account_xero_id' => $account->xero_id,
-            'account_type' => $account->type,
-            'account_name' => $account->name,
-        ] + $attributes);
+            'account_type'    => $account->type,
+            'account_name'    => $account->name,
+        ], $attributes));
     }
 
     /**
@@ -148,12 +201,13 @@ trait CreatesModels
     public function createSalesAccount()
     {
         return factory(Account::class)->create([
-            'code' => 200,
-            'name' => 'Sales',
-            'type' => 'REVENUE',
-            'status' => 'ACTIVE',
-            'tax_type' => 'OUTPUT',
-            'is_system_account' => 0
+            'code'              => 200,
+            'name'              => 'Sales',
+            'type'              => 'REVENUE',
+            'status'            => 'ACTIVE',
+            'tax_type'          => 'OUTPUT',
+            'is_system_account' => 0,
+            'currency_code'     => 'AUD',
         ]);
     }
 
@@ -191,11 +245,11 @@ trait CreatesModels
     public function createGSTAccount($attributes = [])
     {
         return factory(Account::class)->create([
-            'code' => 820,
-            'name' => 'GST',
-            'type' => 'CURRLIAB',
-            'status' => 'ACTIVE',
-            'tax_type' => 'BASEXCLUDED',
+            'code'              => 820,
+            'name'              => 'GST',
+            'type'              => 'CURRLIAB',
+            'status'            => 'ACTIVE',
+            'tax_type'          => 'BASEXCLUDED',
             'is_system_account' => 1
         ]);
     }
@@ -227,12 +281,12 @@ trait CreatesModels
         // Create debit transaction
         $debitTransaction = $this->createTransaction([
             'account_id' => $debitAccount,
-            'amount' => -$creditTransaction->amount
+            'amount'     => -$creditTransaction->amount
         ]);
 
         return [
             'credit' => $creditTransaction,
-            'debit' => $debitTransaction
+            'debit'  => $debitTransaction
         ];
     }
 
@@ -258,9 +312,8 @@ trait CreatesModels
     {
         // If the given property has not already been set
         if (is_null($this->$propertyName)) {
-
             // Generate new object
-            $object = $this->{'create' . ucfirst($propertyName)}($attributes);
+            $object = $this->{'create'.ucfirst($propertyName)}($attributes);
 
             // Set the property as the new object
             $this->setTestObject($propertyName, $object);
@@ -279,12 +332,33 @@ trait CreatesModels
     {
         // If no object is provided we'll just generate a new one
         if (is_null($object)) {
-
             // Generate new object
-            $object = $this->{'create' . ucfirst($propertyName)}($attributes);
+            $object = $this->{'create'.ucfirst($propertyName)}($attributes);
         }
 
         // Set object
         $this->$propertyName = $object;
+    }
+
+    public function accountsReceivableAccount($attributes = [])
+    {
+        return $this->getTestObject('accountsReceivableAccount', $attributes);
+    }
+
+    public function bankAccount($attributes = [])
+    {
+        return $this->getTestObject('bankAccount', $attributes);
+    }
+
+    public function salesAccount($attributes = [])
+    {
+        return $this->getTestObject('salesAccount', array_merge([
+            'code'              => 200,
+            'name'              => 'Sales',
+            'type'              => 'REVENUE',
+            'status'            => 'ACTIVE',
+            'tax_type'          => 'OUTPUT',
+            'is_system_account' => 0
+        ]));
     }
 }

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Account extends Model
 {
     const TYPES = [
-        'Bank Account' => 'Bank Account',
+        'Bank Account'  => 'Bank Account',
         'Income Source' => 'Income Source',
-        'Expense' => 'Expense',
+        'Expense'       => 'Expense',
     ];
 
     protected $fillable = [
@@ -27,14 +27,36 @@ class Account extends Model
     ];
 
     /**
+     * Return only the bank accounts
+     **/
+    public function scopeBankAccounts($query)
+    {
+        return $query->whereType('BANK');
+    }
+
+    /**
+     * Return only the bank accounts
+     **/
+    public function scopeSelectedBankAccounts($query)
+    {
+        $query = $query->bankAccounts();
+
+        Setting::retrieve('selectedBankAccounts', collect())->each(function ($xeroId) use ($query) {
+            $query = $query->whereXeroId($xeroId);
+        });
+
+        return $query;
+    }
+
+    /**
      * Returns the current account balance of the given account
      *
      * @return float
      **/
     public function balance()
     {
-        return money_format('%(#10n', $this->journalLines->sum( function($transaction) {
-            return $transaction->gross_amount;
+        return money_format('%(#10n', $this->journalLines->sum(function ($transaction) {
+            return $transaction->net_amount;
         }));
     }
 
