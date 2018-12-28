@@ -13,7 +13,7 @@ class Setting extends Model
      **/
     public static function retrieve($key, $default = null)
     {
-        $setting = self::whereKey($key)->first();
+        $setting = self::where('key', $key)->first();
 
         if (is_null($setting)) {
             return $default;

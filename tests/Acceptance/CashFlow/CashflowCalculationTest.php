@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\Calculators\CashflowProjector;
 use App\Calculators\DateCalculator;
 
-class CashflowCalculationTest extends TestCase
+class CashflowCalculationTest extends BrowserKitTestCase
 {
     use CreatesModels;
     use DatabaseMigrations;

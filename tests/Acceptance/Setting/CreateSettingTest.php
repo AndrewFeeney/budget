@@ -3,7 +3,7 @@
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class CreateSettingTest extends TestCase
+class CreateSettingTest extends BrowserKitTestCase
 {
     use CreatesModels;
     use DatabaseMigrations;
@@ -22,6 +22,8 @@ class CreateSettingTest extends TestCase
         $this->check('selected_bank_accounts['.$account->xero_id.']');
 
         $this->press('Save');
+
+        $this->assertResponseOk();
 
         $this->assertEquals(
             [$account->xero_id],

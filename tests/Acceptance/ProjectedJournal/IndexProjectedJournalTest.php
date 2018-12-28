@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class IndexProjectedJournalTest extends TestCase
+class IndexProjectedJournalTest extends BrowserKitTestCase
 {
     use CreatesModels;
     use DatabaseMigrations;

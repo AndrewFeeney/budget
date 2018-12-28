@@ -4,7 +4,7 @@
 use App\Calculators\DateCalculator;
 use Carbon\Carbon;
 
-class DateCalculatorTest extends TestCase
+class DateCalculatorTest extends BrowserKitTestCase
 {
     /** @test */
     public function get_start_of_this_financial_year_returns_1st_july_from_year_previous_on_1st_jan()

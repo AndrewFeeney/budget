@@ -4,7 +4,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\Models\Journal;
 use Carbon\Carbon;
 
-class JournalTest extends TestCase
+class JournalTest extends BrowserKitTestCase
 {
     use CreatesModels;
     use DatabaseMigrations;
