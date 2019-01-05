@@ -39,10 +39,8 @@ class Account extends Model
      **/
     public function scopeSelectedBankAccounts($query)
     {
-        $query = $query->bankAccounts();
-
-        Setting::retrieve('selectedBankAccounts', collect())->each(function ($xeroId) use ($query) {
-            $query = $query->whereXeroId($xeroId);
+        Setting::retrieve('selectedBankAccounts', collect())->each(function ($xeroId, $key) use ($query) {
+            $query = !$key ? $query->bankAccounts()->where('xero_id', $xeroId) : $query->orWhere('xero_id', $xeroId);
         });
 
         return $query;
