@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSRF Token -->
@@ -11,29 +10,44 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link href="/css/app.css" rel="stylesheet">
-    <!-- Scripts -->
-    <script>
-        window.Laravel = <?php echo json_encode([
-            'csrfToken' => csrf_token(),
-        ]); ?>
-    </script>
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:300" rel="stylesheet">
 </head>
-<body>
-    <div>
-        @if ($errors->count() > 0)
-            {{ dump($errors) }}
-        @endif
+<body class="bg-grey-lightest h-screen antialiased font-sans leading-normal">
+    <div id="app">
+        <nav class="bg-white h-12 shadow mb-8 px-6 md:px-0">
+            <div class="container mx-auto h-full">
+                <div class="flex items-center justify-center h-12">
+                    <div class="mr-6">
+                        <a href="{{ url('/') }}" class="text-lg font-hairline text-teal-darker no-underline hover:underline">
+                            {{ config('app.name', 'Laravel') }}
+                        </a>
+                    </div>
+                    <div class="flex-1 text-right">
+                        @guest
+                            <a class="no-underline hover:underline text-teal-darker pr-3 text-sm" href="{{ url('/login') }}">{{ __('Login') }}</a>
+                            <a class="no-underline hover:underline text-teal-darker text-sm" href="{{ url('/register') }}">{{ __('Register') }}</a>
+                        @else
+                            <span class="text-teal-darker text-sm pr-4">{{ Auth::user()->name }}</span>
 
-        <section class="section hero is-primary">
-            <div class="hero-head">
-                @yield('content')
+                            <a href="{{ route('logout') }}"
+                                class="no-underline hover:underline text-teal-darker text-sm"
+                                onclick="event.preventDefault();
+                                document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                                {{ csrf_field() }}
+                            </form>
+                        @endguest
+                    </div>
+                </div>
             </div>
-        </section>
+        </nav>
+
+        @yield('content')
     </div>
 
     <!-- Scripts -->
-    @yield('javascript')
-    <script src="/js/app.js"></script>
+    <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>
